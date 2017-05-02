@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plugin>
+    <id>com.fr.solution.plugin.db.redis</id>
+    <name><![CDATA[Redis数据集]]></name>
+    <active>yes</active>
+    <version>1.0</version>
+    <env-version>8.0</env-version>
+	<jartime>2015-12-20</jartime>
+    <vendor email="Hongtao@finereport.com">Hongtao</vendor>
+    <description><![CDATA[可以连接RedisDB数据库，支持哈希表、列表、集合以及有序集合]]></description>
+    <change-notes><![CDATA[
+        [2017-04-18]连接Redis数据库。<br/>
+    ]]></change-notes>
+    <extra-core>
+        <LocaleFinder class="com.fr.plugin.db.redis.RedisLocaleFinder"/>
+    </extra-core>
+    <extra-report>
+        
+    </extra-report>
+    <extra-designer>
+        <ConnectionProvider class="com.fr.plugin.db.redis.RedisConnectionImpl"/>
+        <TableDataDefineProvider class="com.fr.plugin.db.redis.RedisTableDataDefine"/>
+        <ServerTableDataDefineProvider class="com.fr.plugin.db.redis.RedisTableDataDefine"/>
+    </extra-designer>
+</plugin>
