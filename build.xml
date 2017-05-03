@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." default="jar" name="plugin">
     <!-- JDK路径，根据自己机器上实际位置修改-->
-    <property name="jdk.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home"/>
+    <property name="jdk.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home"/>
 
     <property name="libs" value="${basedir}/lib"/>
     <property name="publicLibs" value=""/>
@@ -98,7 +98,7 @@
 
     </target>
 
-    <target name="jar" depends="jar-obfuse">
+    <target name="jar" depends="super_jar">
         <antcall target="zip"/>
     </target>
 
