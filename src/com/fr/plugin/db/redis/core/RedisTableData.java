@@ -139,11 +139,7 @@ public class RedisTableData extends AbstractParameterTableData {
             RedisDatabaseConnection rc = DatasourceManager.getProviderInstance().getConnection(name, RedisDatabaseConnection.class);
             if (rc != null) {
                 return new RedisTableDataModel(rc,
-                        dbName,
-                        tableName,
                         calculateQuery(query, ps),
-                        calculateQuery(filter, ps),
-                        calculateQuery(sort, ps),
                         rowCount);
             }
         }
@@ -177,21 +173,9 @@ public class RedisTableData extends AbstractParameterTableData {
                     com.fr.data.impl.Connection con = DataCoreXmlUtils.readXMLConnection(reader);
                     this.setDatabase(con);
                 }
-            } else if (ATTR_TAG.equals(tmpName)) {
-                dbName = reader.getAttrAsString("dbName", StringUtils.EMPTY);
-                tableName = reader.getAttrAsString("tableName", StringUtils.EMPTY);
-                showUniqueID = reader.getAttrAsBoolean("showUniqueID", false);
             } else if ("Query".equals(tmpName)) {
                 if ((tmpVal = reader.getElementValue()) != null) {
                     this.setQuery(tmpVal);
-                }
-            } else if ("Filter".equals(tmpName)) {
-                if ((tmpVal = reader.getElementValue()) != null) {
-                    this.setFilter(tmpVal);
-                }
-            } else if ("Sort".equals(tmpName)) {
-                if ((tmpVal = reader.getElementValue()) != null) {
-                    this.setSort(tmpVal);
                 }
             }
         }
@@ -203,28 +187,15 @@ public class RedisTableData extends AbstractParameterTableData {
         if (this.database != null) {
             DataCoreXmlUtils.writeXMLConnection(writer, this.database);
         }
-        writer.startTAG(ATTR_TAG);
-        writer.attr("dbName", dbName);
-        writer.attr("tableName", tableName);
-        if (showUniqueID) {
-            writer.attr("showUniqueID", true);
-        }
-        writer.end();
         writer.startTAG("Query").textNode(getQuery()).end();
-        writer.startTAG("Filter").textNode(getFilter()).end();
-        writer.startTAG("Sort").textNode(getSort()).end();
+
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         RedisTableData cloned = (RedisTableData) super.clone();
-        cloned.database = database;
-        cloned.dbName = dbName;
-        cloned.tableName = tableName;
-        cloned.showUniqueID = showUniqueID;
+        cloned.database = (Connection) database.clone();
         cloned.query = query;
-        cloned.filter = filter;
-        cloned.sort = sort;
         return cloned;
     }
 }

@@ -15,7 +15,7 @@ public class RedisConnectionImpl extends AbstractConnectionProvider {
 
     @Override
     public String nameForConnection() {
-        return "RedisDB";
+        return "Redis";
     }
 
     @Override

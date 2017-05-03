@@ -30,66 +30,41 @@ import java.net.URI;
 
 public class RedisQueryPane extends BasicPane {
 
-    private UIComboBox dbNameCombobox;
-    private UITextField tableNameTextField;
 
     private SQLEditPane sqlTextPane;
-    private SQLEditPane filterTextPane;
-    private SQLEditPane sortTextPane;
-
-
-    private String dbName;
 
     private boolean isFirstTime = true;
 
     public RedisQueryPane() {
         setLayout(new BorderLayout());
-
-        dbNameCombobox = new UIComboBox();
-        tableNameTextField = new UITextField();
         sqlTextPane = new SQLEditPane();
-        filterTextPane = new SQLEditPane();
-        sortTextPane = new SQLEditPane();
+
+        JPanel northPane = new JPanel(new BorderLayout());
+        add(northPane, BorderLayout.NORTH);
+
+        northPane.add(new UILabel(Inter.getLocText("Plugin-Redis_Query_Condition") + ":"), BorderLayout.WEST);
 
         ActionLabel helpLabel = new ActionLabel(Inter.getLocText("Plugin-Redis_Help"));
         helpLabel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(URI.create(SiteCenter.getInstance().acquireUrlByKind("help.mongodb")));
+                    Desktop.getDesktop().browse(URI.create(SiteCenter.getInstance().acquireUrlByKind("help.redis")));
                 } catch (IOException e1) {
                     FRLogger.getLogger().error(e1.getMessage(), e1);
                 }
             }
         });
+        northPane.add(helpLabel, BorderLayout.EAST);
 
-        Component[][] coms = new Component[][]{
-                {new UILabel(Inter.getLocText("Plugin-Redis_Database_Name") + ":"), GUICoreUtils.createBorderLayoutPane(
-                        dbNameCombobox, BorderLayout.CENTER,
-                        helpLabel, BorderLayout.EAST
-                )},
-                {new UILabel(Inter.getLocText("Plugin-Redis_Table_Name") + ":"), tableNameTextField},
-                {new UILabel(Inter.getLocText("Plugin-Redis_Query_Condition") + ":"),  createConditionTextPane(sqlTextPane)},
-                {new UILabel(Inter.getLocText("Plugin-Redis_Filter_Condition") + ":"), createConditionTextPane(filterTextPane)},
-                {new UILabel(Inter.getLocText("Plugin-Redis_Sort_Condition") + ":"), createConditionTextPane(sortTextPane)}
-        };
-
-        double p = TableLayout.PREFERRED;
-        double f = TableLayout.FILL;
-
-        double[] rowSize = {p, p, p, p, p};
-        double[] columnSize = {p, f};
-
-        JPanel panel = TableLayoutHelper.createTableLayoutPane(coms, rowSize, columnSize);
-
-        add(panel, BorderLayout.CENTER);
+        add(createConditionTextPane(sqlTextPane), BorderLayout.CENTER);
     }
 
     private RTextScrollPane createConditionTextPane(SQLEditPane sqlTextPane) {
         sqlTextPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
         RTextScrollPane sqlTextScrollPane = new RTextScrollPane(sqlTextPane);
         sqlTextScrollPane.setBorder(new UIRoundedBorder(UIConstants.LINE_COLOR, 1, UIConstants.ARC));
-        sqlTextScrollPane.setPreferredSize(new Dimension(680, 60));
+        sqlTextScrollPane.setPreferredSize(new Dimension(680, 300));
         return sqlTextScrollPane;
     }
 
@@ -99,18 +74,7 @@ public class RedisQueryPane extends BasicPane {
     }
 
     public void loadDBNames(String[] names) {
-        if (!isFirstTime) {
-            setQuery(StringUtils.EMPTY);
-            setDBName(StringUtils.EMPTY);
-            setTableName(StringUtils.EMPTY);
-        }
-        DefaultComboBoxModel model = (DefaultComboBoxModel) dbNameCombobox.getModel();
-        model.removeAllElements();
-        for (String name : names) {
-            model.addElement(name);
-        }
-        model.setSelectedItem(dbName);
-        isFirstTime = false;
+
     }
 
     public String getQuery() {
@@ -121,35 +85,4 @@ public class RedisQueryPane extends BasicPane {
         sqlTextPane.setText(query);
     }
 
-    public String getFilter() {
-        return filterTextPane.getText();
-    }
-
-    public void setFilter(String filter) {
-        filterTextPane.setText(filter);
-    }
-
-    public String getSort() {
-        return sortTextPane.getText();
-    }
-
-    public void setSort(String sort) {
-        sortTextPane.setText(sort);
-    }
-
-    public String getDBName() {
-        return GeneralUtils.objectToString(dbNameCombobox.getSelectedItem());
-    }
-
-    public void setDBName(String dbName) {
-        this.dbName = dbName;
-    }
-
-    public String getTableName() {
-        return tableNameTextField.getText();
-    }
-
-    public void setTableName(String tableName) {
-        tableNameTextField.setText(tableName);
-    }
 }

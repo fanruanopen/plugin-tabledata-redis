@@ -34,18 +34,28 @@ $installDir/WebReport/WEB-INF/lib/fr-third-8.0.jar
 按实际的配置填写上即可。
 
 ### 新建数据集
-在模板数据集添加的地方会出现Redis数据集，点击新建后会出现如下的界面，选择要查询的库名、表名并写上查询条件即可：
+在模板数据集添加的地方会出现Redis数据集:
+
+![1](screenshots/2.png)
+
+点击新建后会出现如下的界面，输入查询条件即可：
 
 ![1](screenshots/3.png)
 
 
-### 预览效果
-原始数据：
+### 支持的查询语句
 
-![1](screenshots/2.png)
+mget key [key ...]
 
-设定查询条件后，就可以预览数据集结果了：
+hgetall key
 
-![1](screenshots/4.png)
+lrange key 0 -1
 
-可以看到预览出来的数据里面，type字段的值都是ios。
+smembers key
+
+zrange key 0 -1
+
+### 更多查询语句的支持
+只需要实现com.fr.plugin.db.redis.core.visit.Visitor接口，并在VisitorFactory中注册即可。
+
+

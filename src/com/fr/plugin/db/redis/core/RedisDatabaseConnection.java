@@ -12,23 +12,15 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.List;
-//import redis.clients.jedis.Jedis;
-//import redis.clients.jedis.exceptions.JedisConnectionException;
-
-
 
 public class RedisDatabaseConnection extends AbstractDatabaseConnection {
 
-    private static final int DEFAULT_REDIS_PORT = 6379 ;
+    private static final int DEFAULT_REDIS_PORT = 6379;
 
 
     private String host;
     private int port = DEFAULT_REDIS_PORT;
-    private String username;
     private String password;
-    private String defaultDatabaseName;
-    private String options;
-    private RedisMechanism mechanism = RedisMechanism.NONE;
 
     public RedisDatabaseConnection() {
 
@@ -50,14 +42,6 @@ public class RedisDatabaseConnection extends AbstractDatabaseConnection {
         this.port = port;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -66,40 +50,19 @@ public class RedisDatabaseConnection extends AbstractDatabaseConnection {
         this.password = password;
     }
 
-    public RedisMechanism getMechanism() {
-        return mechanism;
-    }
-
-    public void setMechanism(RedisMechanism mechanism) {
-        this.mechanism = mechanism;
-    }
-
-    public String getDefaultDatabaseName() {
-        return defaultDatabaseName;
-    }
-
-    public void setDefaultDatabaseName(String defaultDatabaseName) {
-        this.defaultDatabaseName = defaultDatabaseName;
-    }
-
-    public String getOptions() {
-        return options;
-    }
-
-    public void setOptions(String options) {
-        this.options = options;
-    }
-
 
     @Override
     public void testConnection() throws Exception {
         Jedis client = createRedisClient();
-        if(client == null) {
-            throw new JedisConnectionException("Error to connect redisDB!");
+        client.dbSize();
+    }
+
+    public Jedis createRedisClient() {
+        Jedis client = new Jedis(host, port);
+        if (StringUtils.isNotEmpty(password)) {
+            client.auth(password);
         }
-        else {
-            return;
-        }
+        return client;
     }
 
     @Override
@@ -151,24 +114,6 @@ public class RedisDatabaseConnection extends AbstractDatabaseConnection {
 
     }
 
-
-    public Jedis createRedisClient() {
-        Jedis jedis = new Jedis("127.0.0.1", 6379);
-        System.out.println("clear all " + jedis.flushDB());
-        jedis.sadd("myset","redis");
-        jedis.sadd("myset","mongodb");
-        jedis.lpush("mylist", "mysql");
-        jedis.lpush("mylist", "sqlite");
-        jedis.hset("myhash", "filed1", "value1");
-        jedis.hset("myhash", "filed2", "value2");
-        jedis.zadd("myzset", 1940, "Kay");
-        jedis.zadd("myzset", 1912, "Turing");
-        jedis.zadd("myzset", 1916, "Shannon");
-        return jedis;
-    }
-
-
-
     @Override
     public void readXML(XMLableReader reader) {
         super.readXML(reader);
@@ -177,14 +122,10 @@ public class RedisDatabaseConnection extends AbstractDatabaseConnection {
             if ("Attr".equals(tagName)) {
                 host = reader.getAttrAsString("host", StringUtils.EMPTY);
                 port = reader.getAttrAsInt("port", DEFAULT_REDIS_PORT);
-                username = reader.getAttrAsString("username", StringUtils.EMPTY);
                 String pwd = reader.getAttrAsString("password", StringUtils.EMPTY);
                 if (StringUtils.isNotEmpty(pwd)) {
                     password = CodeUtils.passwordDecode(pwd);
                 }
-                mechanism = RedisMechanism.parse(reader.getAttrAsInt("mechanism", 0));
-                defaultDatabaseName = reader.getAttrAsString("defaultDB", StringUtils.EMPTY);
-                options = reader.getAttrAsString("options", StringUtils.EMPTY);
             }
         }
     }
@@ -195,14 +136,8 @@ public class RedisDatabaseConnection extends AbstractDatabaseConnection {
         writer.startTAG("Attr");
         writer.attr("host", host);
         writer.attr("port", port);
-        writer.attr("username", username);
         if (StringUtils.isNotEmpty(password)) {
             writer.attr("password", CodeUtils.passwordEncode(password));
-        }
-        writer.attr("mechanism", mechanism.toInt());
-        writer.attr("defaultDB", defaultDatabaseName);
-        if (StringUtils.isNotEmpty(options)) {
-            writer.attr("options", options);
         }
         writer.end();
     }
@@ -212,11 +147,7 @@ public class RedisDatabaseConnection extends AbstractDatabaseConnection {
         com.fr.plugin.db.redis.core.RedisDatabaseConnection cloned = (com.fr.plugin.db.redis.core.RedisDatabaseConnection) super.clone();
         cloned.host = host;
         cloned.port = port;
-        cloned.username = username;
         cloned.password = password;
-        cloned.mechanism = mechanism;
-        cloned.defaultDatabaseName = defaultDatabaseName;
-        cloned.options = options;
         return cloned;
     }
 }

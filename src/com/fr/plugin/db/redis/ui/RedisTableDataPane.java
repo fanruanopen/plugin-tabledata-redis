@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
-
 public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
     private static final String PREVIEW_BUTTON = Inter.getLocText("Preview");
     private static final String REFRESH_BUTTON = Inter.getLocText("Refresh");
@@ -59,7 +57,7 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
         ParameterTableModel model = new ParameterTableModel() {
             @Override
             public UITableEditAction[] createAction() {
-                return (UITableEditAction[]) ArrayUtils.add(super.createDBTableAction(), new RefreshAction());
+                return ArrayUtils.add(super.createDBTableAction(), new RefreshAction());
             }
         };
         editorPane = new UITableEditorPane<ParameterProvider>(model);
@@ -87,13 +85,14 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
         });
     }
 
-    private boolean isPreviewOrRefreshButton (FocusEvent e) {
+    private boolean isPreviewOrRefreshButton(FocusEvent e) {
         if (e.getOppositeComponent() != null) {
             String name = e.getOppositeComponent().getName();
             return ComparatorUtils.equals(name, PREVIEW_BUTTON) || ComparatorUtils.equals(name, REFRESH_BUTTON);
         }
         return false;
     }
+
     private JToolBar createToolBar() {
         ToolBarDef toolBarDef = new ToolBarDef();
         toolBarDef.addShortCut(new PreviewAction());
@@ -108,7 +107,7 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
     }
 
     private void refresh() {
-        String[] paramTexts = new String[]{queryPane.getQuery(), queryPane.getFilter(), queryPane.getSort()};
+        String[] paramTexts = new String[]{queryPane.getQuery()};
 
         List<ParameterProvider> existParameterList = editorPane.update();
         Parameter[] ps = existParameterList == null ? new Parameter[0] : existParameterList.toArray(new Parameter[existParameterList.size()]);
@@ -118,7 +117,7 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
 
 
     private void checkParameter() {
-        String[] paramTexts = new String[]{queryPane.getQuery(), queryPane.getFilter(), queryPane.getSort()};
+        String[] paramTexts = new String[]{queryPane.getQuery()};
 
         Parameter[] parameters = ParameterHelper.analyze4Parameters(paramTexts, false);
 
@@ -154,10 +153,6 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
         chosePane.populateConnection(tableData.getDatabase());
 
         queryPane.setQuery(tableData.getQuery());
-        queryPane.setFilter(tableData.getFilter());
-        queryPane.setSort(tableData.getSort());
-        queryPane.setDBName(tableData.getDbName());
-        queryPane.setTableName(tableData.getTableName());
 
     }
 
@@ -176,13 +171,9 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
         tableData.setParameters(parameters);
 
         tableData.setQuery(queryPane.getQuery());
-        tableData.setFilter(queryPane.getFilter());
-        tableData.setSort(queryPane.getSort());
-        tableData.setDbName(queryPane.getDBName());
-        tableData.setTableName(queryPane.getTableName());
 
 
-        return  tableData;
+        return tableData;
     }
 
     private class PreviewAction extends UpdateAction {
