@@ -45,22 +45,9 @@ public class RedisTableData extends AbstractParameterTableData {
         }
     };
 
-    private static final String ATTR_TAG = "RedisTableDataAttr";
-
     private Connection database;
-
-
-    private String dbName;
-
-    private String tableName;
-
     private String query;
 
-    private String filter;
-
-    private String sort;
-
-    private boolean showUniqueID;
 
     public void setDatabase(Connection c) {
         this.database = c;
@@ -70,52 +57,12 @@ public class RedisTableData extends AbstractParameterTableData {
         return database;
     }
 
-    public String getDbName() {
-        return dbName;
-    }
-
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public void setQuery(String query) {
-        this.query = query;
-    }
-
     public String getQuery() {
         return query;
     }
 
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setSort(String sort) {
-        this.sort = sort;
-    }
-
-    public String getSort() {
-        return sort;
-    }
-
-    public boolean isShowUniqueID() {
-        return showUniqueID;
-    }
-
-    public void setShowUniqueID(boolean showUniqueID) {
-        this.showUniqueID = showUniqueID;
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     public void setParameters(ParameterProvider[] providers) {
