@@ -1,5 +1,6 @@
 package com.fr.plugin.db.redis.core.visit;
 
+import com.fr.plugin.db.redis.core.DataWrapper;
 import com.fr.stable.StringUtils;
 import redis.clients.jedis.Jedis;
 
@@ -13,6 +14,8 @@ public interface Visitor<T> {
     String TOKEN_SPACE = StringUtils.BLANK;
 
     List<List<T>> getContent(Jedis client, String query, int rowCount) throws Exception;
+
+    DataWrapper<T> buildData(Jedis client, String query, int rowCount) throws Exception;
 
     boolean match(String query);
 

@@ -8,6 +8,7 @@ import com.fr.data.core.DataCoreXmlUtils;
 import com.fr.data.impl.Connection;
 import com.fr.data.impl.NameDatabaseConnection;
 import com.fr.file.DatasourceManager;
+import com.fr.general.GeneralUtils;
 import com.fr.general.Inter;
 import com.fr.general.data.DataModel;
 import com.fr.plugin.ExtraClassManager;
@@ -46,6 +47,7 @@ public class RedisTableData extends AbstractParameterTableData {
     };
 
     private Connection database;
+    private int dbIndex;
     private String query;
 
 
@@ -55,6 +57,14 @@ public class RedisTableData extends AbstractParameterTableData {
 
     public Connection getDatabase() {
         return database;
+    }
+
+    public int getDbIndex() {
+        return dbIndex;
+    }
+
+    public void setDbIndex(int dbIndex) {
+        this.dbIndex = dbIndex;
     }
 
     public String getQuery() {
@@ -86,6 +96,7 @@ public class RedisTableData extends AbstractParameterTableData {
             RedisDatabaseConnection rc = DatasourceManager.getProviderInstance().getConnection(name, RedisDatabaseConnection.class);
             if (rc != null) {
                 return new RedisTableDataModel(rc,
+                        dbIndex,
                         calculateQuery(query, ps),
                         rowCount);
             }
@@ -115,13 +126,16 @@ public class RedisTableData extends AbstractParameterTableData {
             String tmpName = reader.getTagName();
             String tmpVal;
 
-            if (com.fr.data.impl.Connection.XML_TAG.equals(tmpName)) {
+            if ("RedisAttr".equals(tmpName)) {
+                this.dbIndex = reader.getAttrAsInt("dbIndex", RedisConstants.DEFAULT_DB_INDEX);
+            } else if (com.fr.data.impl.Connection.XML_TAG.equals(tmpName)) {
                 if (reader.getAttrAsString("class", null) != null) {
                     com.fr.data.impl.Connection con = DataCoreXmlUtils.readXMLConnection(reader);
                     this.setDatabase(con);
                 }
             } else if ("Query".equals(tmpName)) {
-                if ((tmpVal = reader.getElementValue()) != null) {
+                tmpVal = reader.getElementValue();
+                if (isNotNullValue(tmpVal)) {
                     this.setQuery(tmpVal);
                 }
             }
@@ -131,11 +145,17 @@ public class RedisTableData extends AbstractParameterTableData {
     @Override
     public void writeXML(XMLPrintWriter writer) {
         super.writeXML(writer);
+        writer.startTAG("RedisAttr");
+        writer.attr("dbIndex", dbIndex);
+        writer.end();
         if (this.database != null) {
             DataCoreXmlUtils.writeXMLConnection(writer, this.database);
         }
         writer.startTAG("Query").textNode(getQuery()).end();
+    }
 
+    private boolean isNotNullValue(String value) {
+        return value != null && !"null".equals(value);
     }
 
     @Override
@@ -143,6 +163,7 @@ public class RedisTableData extends AbstractParameterTableData {
         RedisTableData cloned = (RedisTableData) super.clone();
         cloned.database = (Connection) database.clone();
         cloned.query = query;
+        cloned.dbIndex = dbIndex;
         return cloned;
     }
 }

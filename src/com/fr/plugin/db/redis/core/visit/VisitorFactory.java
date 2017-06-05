@@ -1,10 +1,10 @@
 package com.fr.plugin.db.redis.core.visit;
 
+import com.fr.plugin.db.redis.core.DataWrapper;
 import com.fr.plugin.db.redis.core.visit.impl.*;
 import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,14 +20,15 @@ public class VisitorFactory {
         visitors.add(new SetVisitor());
         visitors.add(new ZRangeVisitor());
         visitors.add(new MGetVisitor());
+        visitors.add(new SingleArrayVisitor());
     }
 
-    public  static <T> List<List<T>> getKeyValueResult(Jedis client, String query, int rowCount) throws Exception {
+    public  static <T> DataWrapper<T> getKeyValueResult(Jedis client, String query, int rowCount) throws Exception {
         Visitor visitor = getMatchedVisitor(query);
         if (visitor == null) {
-            return Collections.emptyList();
+            return DataWrapper.EMPTY;
         } else {
-            return visitor.getContent(client, query, rowCount);
+            return visitor.buildData(client, query, rowCount);
         }
     }
 

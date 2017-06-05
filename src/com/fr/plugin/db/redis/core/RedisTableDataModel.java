@@ -14,28 +14,33 @@ import java.util.*;
 public class RedisTableDataModel extends AbstractDataModel {
 
     private Jedis redisClient;
-    private String[] columnNames = new String[]{"text", "value"};
+    private String[] columnNames;
     private List<List<Object>> data;
 
 
-    public RedisTableDataModel(RedisDatabaseConnection mc, String query, int rowCount) {
+    public RedisTableDataModel(RedisDatabaseConnection mc, int dbIndex, String query, int rowCount) {
         PluginLicense pluginLicense = PluginLicenseManager.getInstance().getPluginLicenseByID(RedisConstants.PLUGIN_ID);
         if (pluginLicense.isAvailable()) {
-            initRedisData(mc, query, rowCount);
+            initRedisData(mc, dbIndex, query, rowCount);
         } else {
             throw new RuntimeException("Redis Plugin License Expired!");
         }
     }
 
-    private synchronized void initRedisData(RedisDatabaseConnection mc, String query, int rowCount) {
+    private synchronized void initRedisData(RedisDatabaseConnection mc, int dbIndex, String query, int rowCount) {
         if (StringUtils.isEmpty(query)) {
             return;
         }
         if (redisClient == null) {
             redisClient = mc.createRedisClient();
+            if (dbIndex != RedisConstants.DEFAULT_DB_INDEX) {
+                redisClient.select(dbIndex);
+            }
         }
         try {
-            data = VisitorFactory.getKeyValueResult(redisClient, query, rowCount);
+            DataWrapper wrapper = VisitorFactory.getKeyValueResult(redisClient, query, rowCount);
+            data = wrapper.getData();
+            columnNames = wrapper.getColumnNames();
         } catch (Exception e) {
             throw new RuntimeException(e.getCause());
         }

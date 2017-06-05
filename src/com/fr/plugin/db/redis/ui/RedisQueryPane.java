@@ -8,6 +8,7 @@ import com.fr.design.gui.icheckbox.UICheckBox;
 import com.fr.design.gui.icombobox.UIComboBox;
 import com.fr.design.gui.ilable.ActionLabel;
 import com.fr.design.gui.ilable.UILabel;
+import com.fr.design.gui.itextfield.UINumberField;
 import com.fr.design.gui.itextfield.UITextField;
 import com.fr.design.gui.syntax.ui.rsyntaxtextarea.SyntaxConstants;
 import com.fr.design.gui.syntax.ui.rtextarea.RTextScrollPane;
@@ -31,18 +32,17 @@ import java.net.URI;
 public class RedisQueryPane extends BasicPane {
 
 
+    private UINumberField dbIndexField;
     private SQLEditPane sqlTextPane;
-
-    private boolean isFirstTime = true;
 
     public RedisQueryPane() {
         setLayout(new BorderLayout());
+
         sqlTextPane = new SQLEditPane();
 
-        JPanel northPane = new JPanel(new BorderLayout());
-        add(northPane, BorderLayout.NORTH);
-
-        northPane.add(new UILabel(Inter.getLocText("Plugin-Redis_Query_Condition") + ":"), BorderLayout.WEST);
+        dbIndexField = new UINumberField();
+        dbIndexField.setInteger(true);
+        dbIndexField.setMinValue(0);
 
         ActionLabel helpLabel = new ActionLabel(Inter.getLocText("Plugin-Redis_Help"));
         helpLabel.addActionListener(new ActionListener() {
@@ -55,9 +55,19 @@ public class RedisQueryPane extends BasicPane {
                 }
             }
         });
-        northPane.add(helpLabel, BorderLayout.EAST);
 
-        add(createConditionTextPane(sqlTextPane), BorderLayout.CENTER);
+        Component[][] coms = new Component[][]{
+                {new UILabel(Inter.getLocText("Plugin-Redis_DB_Index") + ":"), dbIndexField},
+                {GUICoreUtils.createBorderLayoutPane(new UILabel(Inter.getLocText("Plugin-Redis_Query_Condition") + ":"), BorderLayout.NORTH), createConditionTextPane(sqlTextPane)}
+        };
+
+        double p = TableLayout.PREFERRED;
+        double f = TableLayout.FILL;
+
+        double[] rowSize = {p, p};
+        double[] columnSize = {p, f};
+
+        add(TableLayoutHelper.createTableLayoutPane(coms, rowSize, columnSize));
     }
 
     private RTextScrollPane createConditionTextPane(SQLEditPane sqlTextPane) {
@@ -73,16 +83,20 @@ public class RedisQueryPane extends BasicPane {
         return "Query";
     }
 
-    public void loadDBNames(String[] names) {
-
-    }
-
     public String getQuery() {
         return sqlTextPane.getText();
     }
 
     public void setQuery(String query) {
         sqlTextPane.setText(query);
+    }
+
+    public int getDBIndex() {
+        return GeneralUtils.objectToNumber(dbIndexField.getValue()).intValue();
+    }
+
+    public void setDBIndex(int index) {
+        dbIndexField.setValue(index);
     }
 
 }

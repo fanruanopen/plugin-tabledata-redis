@@ -7,11 +7,14 @@ import com.fr.data.impl.NameDatabaseConnection;
 import com.fr.design.actions.UpdateAction;
 import com.fr.design.data.datapane.preview.PreviewTablePane;
 import com.fr.design.data.tabledata.tabledatapane.AbstractTableDataPane;
+import com.fr.design.gui.ilable.UILabel;
 import com.fr.design.gui.itableeditorpane.ParameterTableModel;
 import com.fr.design.gui.itableeditorpane.UITableEditAction;
 import com.fr.design.gui.itableeditorpane.UITableEditorPane;
+import com.fr.design.gui.itextfield.UINumberField;
 import com.fr.design.gui.itoolbar.UIToolbar;
 import com.fr.design.menu.ToolBarDef;
+import com.fr.design.utils.gui.GUICoreUtils;
 import com.fr.general.ComparatorUtils;
 import com.fr.general.Inter;
 import com.fr.plugin.db.redis.core.RedisTableData;
@@ -64,6 +67,7 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
 
 
         box.add(northPane);
+
         box.add(queryPane);
 
         box.add(editorPane);
@@ -76,13 +80,6 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
         sqlSplitPane.add(chosePane, BorderLayout.WEST);
 
         this.add(sqlSplitPane, BorderLayout.CENTER);
-
-        chosePane.addDataLoadedListener(new DataLoadedListener() {
-            @Override
-            public void fireEvent(String[] data) {
-                queryPane.loadDBNames(data);
-            }
-        });
     }
 
     private boolean isPreviewOrRefreshButton(FocusEvent e) {
@@ -154,6 +151,8 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
 
         queryPane.setQuery(tableData.getQuery());
 
+        queryPane.setDBIndex(tableData.getDbIndex());
+
     }
 
 
@@ -171,6 +170,8 @@ public class RedisTableDataPane extends AbstractTableDataPane<RedisTableData> {
         tableData.setParameters(parameters);
 
         tableData.setQuery(queryPane.getQuery());
+
+        tableData.setDbIndex(queryPane.getDBIndex());
 
 
         return tableData;
