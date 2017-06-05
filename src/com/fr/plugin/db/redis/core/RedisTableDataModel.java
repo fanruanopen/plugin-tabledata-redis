@@ -1,11 +1,13 @@
 package com.fr.plugin.db.redis.core;
 
+import com.fr.base.Parameter;
 import com.fr.data.AbstractDataModel;
 import com.fr.general.FRLogger;
 import com.fr.general.data.TableDataException;
 import com.fr.plugin.PluginLicense;
 import com.fr.plugin.PluginLicenseManager;
 import com.fr.plugin.db.redis.core.visit.VisitorFactory;
+import com.fr.script.Calculator;
 import com.fr.stable.StringUtils;
 import redis.clients.jedis.Jedis;
 
@@ -18,16 +20,16 @@ public class RedisTableDataModel extends AbstractDataModel {
     private List<List<Object>> data;
 
 
-    public RedisTableDataModel(RedisDatabaseConnection mc, int dbIndex, String query, int rowCount) {
+    public RedisTableDataModel(Calculator calculator, Parameter[] ps, RedisDatabaseConnection mc, int dbIndex, String query, int rowCount) {
         PluginLicense pluginLicense = PluginLicenseManager.getInstance().getPluginLicenseByID(RedisConstants.PLUGIN_ID);
         if (pluginLicense.isAvailable()) {
-            initRedisData(mc, dbIndex, query, rowCount);
+            initRedisData(calculator, ps, mc, dbIndex, query, rowCount);
         } else {
             throw new RuntimeException("Redis Plugin License Expired!");
         }
     }
 
-    private synchronized void initRedisData(RedisDatabaseConnection mc, int dbIndex, String query, int rowCount) {
+    private synchronized void initRedisData(Calculator calculator, Parameter[] ps, RedisDatabaseConnection mc, int dbIndex, String query, int rowCount) {
         if (StringUtils.isEmpty(query)) {
             return;
         }
@@ -38,7 +40,7 @@ public class RedisTableDataModel extends AbstractDataModel {
             }
         }
         try {
-            DataWrapper wrapper = VisitorFactory.getKeyValueResult(redisClient, query, rowCount);
+            DataWrapper wrapper = VisitorFactory.getKeyValueResult(calculator, ps, redisClient, query, rowCount);
             data = wrapper.getData();
             columnNames = wrapper.getColumnNames();
         } catch (Exception e) {

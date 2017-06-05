@@ -1,7 +1,9 @@
 package com.fr.plugin.db.redis.core.visit.impl;
 
+import com.fr.base.Parameter;
 import com.fr.base.TableData;
 import com.fr.plugin.db.redis.core.visit.AbstractVisitor;
+import com.fr.script.Calculator;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
 
@@ -14,7 +16,7 @@ import java.util.Set;
  */
 public class ZRangeVisitor extends AbstractVisitor<Object> {
     @Override
-    public List<List<Object>> getContent(Jedis client, String query, int rowCount) throws Exception {
+    public List<List<Object>> getContent(Calculator calculator, Parameter[] ps, Jedis client, String query, int rowCount) throws Exception {
         String[] arr = query.trim().split(TOKEN_SPACE);
         if (arr.length < 4) {
             throw new IllegalArgumentException("Illegal query:" + query);

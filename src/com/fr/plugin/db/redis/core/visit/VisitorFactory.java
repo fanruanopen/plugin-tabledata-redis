@@ -1,7 +1,9 @@
 package com.fr.plugin.db.redis.core.visit;
 
+import com.fr.base.Parameter;
 import com.fr.plugin.db.redis.core.DataWrapper;
 import com.fr.plugin.db.redis.core.visit.impl.*;
+import com.fr.script.Calculator;
 import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
@@ -23,12 +25,12 @@ public class VisitorFactory {
         visitors.add(new SingleArrayVisitor());
     }
 
-    public  static <T> DataWrapper<T> getKeyValueResult(Jedis client, String query, int rowCount) throws Exception {
+    public  static <T> DataWrapper<T> getKeyValueResult(Calculator calculator, Parameter[] ps, Jedis client, String query, int rowCount) throws Exception {
         Visitor visitor = getMatchedVisitor(query);
         if (visitor == null) {
             return DataWrapper.EMPTY;
         } else {
-            return visitor.buildData(client, query, rowCount);
+            return visitor.buildData(calculator, ps, client, query, rowCount);
         }
     }
 

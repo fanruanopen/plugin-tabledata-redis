@@ -1,7 +1,9 @@
 package com.fr.plugin.db.redis.core.visit;
 
+import com.fr.base.Parameter;
 import com.fr.plugin.db.redis.core.DataWrapper;
 import com.fr.plugin.db.redis.core.RedisConstants;
+import com.fr.script.Calculator;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -10,8 +12,8 @@ import redis.clients.jedis.Jedis;
 public abstract class AbstractVisitor<T> implements Visitor<T> {
 
     @Override
-    public DataWrapper<T> buildData(Jedis client, String query, int rowCount) throws Exception {
-        return DataWrapper.create(getContent(client, query, rowCount), RedisConstants.DEFAULT_COLUMN_NAMES);
+    public DataWrapper<T> buildData(Calculator calculator, Parameter[] ps, Jedis client, String query, int rowCount) throws Exception {
+        return DataWrapper.create(getContent(calculator, ps, client, query, rowCount), RedisConstants.DEFAULT_COLUMN_NAMES);
     }
 
     @Override

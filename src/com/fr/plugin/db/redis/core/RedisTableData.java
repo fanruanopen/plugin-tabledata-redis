@@ -95,7 +95,7 @@ public class RedisTableData extends AbstractParameterTableData {
             String name = ((NameDatabaseConnection) database).getName();
             RedisDatabaseConnection rc = DatasourceManager.getProviderInstance().getConnection(name, RedisDatabaseConnection.class);
             if (rc != null) {
-                return new RedisTableDataModel(rc,
+                return new RedisTableDataModel(calculator, ps, rc,
                         dbIndex,
                         calculateQuery(query, ps),
                         rowCount);

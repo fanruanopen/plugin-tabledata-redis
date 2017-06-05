@@ -1,7 +1,9 @@
 package com.fr.plugin.db.redis.core.visit.impl;
 
+import com.fr.base.Parameter;
 import com.fr.base.TableData;
 import com.fr.plugin.db.redis.core.visit.AbstractVisitor;
+import com.fr.script.Calculator;
 import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.List;
  */
 public class ListVisitor extends AbstractVisitor<String> {
     @Override
-    public List<List<String>> getContent(Jedis client, String query, int rowCount) throws Exception {
+    public List<List<String>> getContent(Calculator calculator, Parameter[] ps, Jedis client, String query, int rowCount) throws Exception {
 
         String[] arr = query.trim().split(TOKEN_SPACE);
         if (arr.length < 4) {
